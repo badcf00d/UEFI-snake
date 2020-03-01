@@ -5,7 +5,7 @@ errorCode:
 
     mov rcx, errorString        ; set rcx (argument 1) to the error string
     call printString            ; print the error string
-    call printNumber            ; print the number at the head of the stack
+    call printNumber            ; print the 64-bits at the head of the stack
     
     pop rax                     ; restore the error code
     jmp errorHandler

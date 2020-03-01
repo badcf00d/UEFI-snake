@@ -22,7 +22,7 @@ printNumberLoop:
 
 printString:
     mov rdx, rcx                                                ; set the 2nd argument to the passed in string
-    mov rcx, [systemTable]                                      ; get the EFI_SYSTEM_TABLE
+    mov rcx, [ptrSystemTable]                                      ; get the EFI_SYSTEM_TABLE
     mov rcx, [rcx + EFI_SYSTEM_TABLE.ConOut]                    ; set the 1st argument to EFI_SYSTEM_TABLE.ConOut
     
     call [rcx + EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL.OutputString]
