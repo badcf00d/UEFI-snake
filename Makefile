@@ -17,7 +17,7 @@ EFI = $(EFI_DIR)/uefi.efi
 BIOS = $(wildcard $(INC_DIR)/*.bios)
 BOOT_DRIVE = uefi.img
 
-.PHONY: clean qemu all img
+.PHONY: clean qemu all img gdb
 
 all: $(OBJ)
 	$(LINKER) $(LLD-FLAGS) -o $(EFI) $<
@@ -41,6 +41,9 @@ endif
 	mmd -i $(BOOT_DRIVE) ::EFI
 	mmd -i $(BOOT_DRIVE) ::EFI/BOOT
 	mcopy -i $(BOOT_DRIVE) $(EFI) ::EFI/BOOT/BOOTX64.EFI
+
+gdb:
+	gdb $(EFI) -ex 'target remote localhost:1234' -ex 'set architecture i386:x86-64' -ex 'set disassembly-flavor intel' -ex 'x/3i $$pc'
 
 $(OBJ_DIR)/%.obj: $(SRC_DIR)/%.asm
 	$(ASM) $(ASMFLAGS) -o $@ $<

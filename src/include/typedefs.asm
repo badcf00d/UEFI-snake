@@ -18,11 +18,38 @@ EFI_SYSTEM_TABLE_SIGNATURE        equ 0x5453595320494249
 EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID db 0xde, 0xa9, 0x42, 0x90, 0xdc, 0x23, 0x38, 0x4a
                                   db 0x96, 0xfb, 0x7a, 0xde, 0xd0, 0x80, 0x51, 0x6a
 
+
+EVT_TIMER                           equ 0x80000000
+EVT_RUNTIME                         equ 0x40000000
+EVT_NOTIFY_WAIT                     equ 0x00000100
+EVT_NOTIFY_SIGNAL                   equ 0x00000200
+EVT_SIGNAL_EXIT_BOOT_SERVICES       equ 0x00000201
+EVT_SIGNAL_VIRTUAL_ADDRESS_CHANGE   equ 0x60000202
+
+TPL_APPLICATION         equ 4
+TPL_CALLBACK            equ 8
+TPL_NOTIFY              equ 16
+TPL_HIGH_LEVEL          equ 31
+
+TimerCancel             equ 0
+TimerPeriodic           equ 1
+TimerRelative           equ 2
+
 ; the UEFI data types with natural alignment set
 ; see http://www.uefi.org/sites/default/files/resources/UEFI Spec 2_7_A Sept 6.pdf#G6.999718
 %macro UINTN 0
     RESQ 1
     alignb 8
+%endmacro
+
+%macro UINT8 0
+    RESB 1
+    alignb 1
+%endmacro
+
+%macro UINT16 0
+    RESW 1
+    alignb 2
 %endmacro
 
 %macro UINT32 0
@@ -33,6 +60,11 @@ EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID db 0xde, 0xa9, 0x42, 0x90, 0xdc, 0x23, 0x38, 0
 %macro UINT64 0
     RESQ 1
     alignb 8
+%endmacro
+
+%macro INT16 0
+    RESW 1
+    alignb 2
 %endmacro
 
 %macro EFI_HANDLE 0
@@ -174,9 +206,28 @@ endstruc
 ; see http://www.uefi.org/sites/default/files/resources/UEFI Spec 2_7_A Sept 6.pdf#G11.1004788
 ; the Related Definitions section
 struc EFI_MEMORY_DESCRIPTOR
-    .Type          UINT32
-    .PhysicalStart POINTER
-    .VirtualStart  POINTER
-    .NumberOfPages UINT64
-    .Attribute     UINT64
+    .Type           UINT32
+    .PhysicalStart  POINTER
+    .VirtualStart   POINTER
+    .NumberOfPages  UINT64
+    .Attribute      UINT64
 endstruc
+
+
+
+struc EFI_TIME
+    .Year           UINT16      ; 1900 – 9999
+    .Month          UINT8       ; 1 – 12
+    .Day            UINT8       ; 1 – 31
+    .Hour           UINT8       ; 0 – 23
+    .Minute         UINT8       ; 0 – 59
+    .Second         UINT8       ; 0 – 59
+    .Pad1           UINT8
+    .Nanosecond     UINT32      ; 0 – 999,999,999
+    .TimeZone       INT16       ; -1440 to 1440 or 2047
+    .Daylight       UINT8
+    .Pad2           UINT8
+endstruc
+
+
+
